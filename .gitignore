@@ -1,0 +1,14 @@
+#ignore all insight lists directory
+lists/**
+!lists/Bird.lst
+
+#ignore ToDo aand description information
+ToDo.txt
+desc.txt
+
+#ignore swp swo files
+*.swp
+*.swo
+
+#compiled files
+*.out
