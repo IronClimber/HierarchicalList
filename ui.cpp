@@ -160,6 +160,7 @@ bool save_list() {
 int main() {
 
   while (!quit) {
+    hl.clean();
     select_list();
   }
 
@@ -304,6 +305,7 @@ void edit_list() {
     else if (cmd == "set") {
       int n, r;
       std::cin >> n >> r;
+      //What about errors?
       clean_buffer();
       if (n >= 0 && n < hl.size()) {
         hl.set_rate(n, r);
@@ -315,7 +317,17 @@ void edit_list() {
 
     /* ADD */
     else if (cmd == "add") {
-      /*ToDo*/
+      int r;
+      std::string c;
+      std::cin >> r;
+      if (r >= 0) {
+        getline(std::cin, c);
+        hl.add_element(c, r);
+      }   
+      else {
+        std::cout << "Wrong rate" << std::endl;
+      }
+      clean_buffer();
     }
 
     /* REMOVE */
@@ -370,6 +382,7 @@ bool set_name() {
 
 }
 
+//Should I clean list before read? Yes, but where? In this function?
 bool set_file() {
   std::string n;
   std::cin >> n;
