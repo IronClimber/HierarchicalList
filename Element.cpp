@@ -49,7 +49,14 @@ std::istream& operator>>(std::istream& is, Element& e) {
     return is;
   }
   getline(is, n);
-  e = Element(n, r);
+  char c{' '};
+  int i{0};
+  while (isspace(c)) {
+    c = n[i];
+    ++i;
+  }
+  std::string s = n.substr(i-1);
+  e = Element(s, r);
   return is;
 }
 

@@ -320,6 +320,11 @@ void edit_list() {
       int r;
       std::string c;
       std::cin >> r;
+
+      /*if(!std::cin >> r) {
+        std::cout << "Wrong input" << std::endl;
+      };*/
+      
       if (r >= 0) {
         getline(std::cin, c);
         hl.add_element(c, r);
