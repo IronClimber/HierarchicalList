@@ -8,34 +8,17 @@
 
 using namespace boost::filesystem;
 
+HierarchicalList hl;
+//std::string input_line;
+//std::vector<std::string> input;
+
 bool quit{false};
 bool stop{true};
 
-std::string passline{"empty line"};
-void clean_buffer() {
-  getline(std::cin, passline);  // hack to clear the buffer
-}
-
-bool are_you_sure() {
-
-  bool complite{false};
-  //while (1) ?
-  while (!complite) {
-
-    char ch;
-
-    std::cout << "(y - yes, n - no): ";
-
-    std::cin >> ch;
-    clean_buffer();
-
-    if (ch == 'y') { return true; }
-    else if (ch == 'n') { return false; }
-    else { std::cout << "Wrong answer. Try again."; }
-  }
-}
-
-HierarchicalList hl;
+//ToDo: interface library
+void clean_buffer();
+std::vector<std::string> prompt();
+bool are_you_sure();
 std::vector<std::string> get_names();
 std::vector<std::string> split(const std::string &s, char delim);
 void select_list();
@@ -46,114 +29,9 @@ void edit_list();
 bool set_name();
 bool set_file();
 void print_lists();
-
-void print_help() {
-  int c = 12;
-  int p = 12;
-  std::cout << "HierarchicalList v0.1" << std::endl << std::endl
-
-            << "\tAvaliable commands:" << std::endl << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "new" 
-                        << std::left << std::setw(p) << "<name>"
-                        << std::left << std::setw(p) << "" 
-                        << "create new list and edit;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "open"
-                        << std::left << std::setw(p) << "<name>"
-                        << std::left << std::setw(p) << "" 
-                        << "open list and edit;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "delete"
-                        << std::left << std::setw(p) << "<name>"
-                        << std::left << std::setw(p) << "" 
-                        << "delete list;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "list"
-                        << std::left << std::setw(p) << "" 
-                        << std::left << std::setw(p) << "" 
-                        << "list of existing lists;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "help"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "command list;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "quit"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "exit HierarchicalList." << std::endl
-            << std::endl;
-
-  std::cout << "\tEdit list commands:" << std::endl << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "up"
-                        << std::left << std::setw(p) << "<index>"
-                        << std::left << std::setw(p) << ""
-                        << "up rate of element;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "down"
-                        << std::left << std::setw(p) << "<index>"
-                        << std::left << std::setw(p) << ""
-                        << "down rate of element;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "set"
-                        << std::left << std::setw(p) << "<index>"
-                        << std::left << std::setw(p) << "<rate>"
-                        << "set rate of element;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "add"
-                        << std::left << std::setw(p) << "<rate>"
-                        << std::left << std::setw(p) << "<content>"
-                        << "add element;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "remove"
-                        << std::left << std::setw(p) << "<index>"
-                        << std::left << std::setw(p) << ""
-                        << "remove element;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "save"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "save list to file;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "stop"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "stop working on list;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "help"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "command list;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "clean"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "remove all elements from list;" << std::endl
-
-            << "\t\t- " << std::left << std::setw(c) << "edit"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "edit list (set new name)." << std::endl;
-
-}
-
-void print_error() {
-  std::cout << "Something go wrong." << std::endl;
-}
-
-
-bool save_list() {
-  if (hl.write()) {
-    std::cout << hl.get_name() << " saved." << std::endl;
-    return true;
-  }
-  else {
-    std::cout << hl.get_name() << " has trouble with saving." << std::endl;
-    return false;
-  }
-}
+void print_help();
+void print_error();
+bool save_list();
 
 /* ---------- MAIN ------------ */
 
@@ -172,6 +50,11 @@ int main() {
 
 /* -----------------------------*/
 
+std::vector<std::string> prompt() {
+  std::cout << ">>> ";
+  std::string istr;
+  getline(std::cin, istr);
+}
 
 void select_list() {
 
@@ -499,4 +382,136 @@ bool check_list(std::string n) {
     }
   }
   return false;
+}
+
+
+void print_help() {
+  int c = 12;
+  int p = 12;
+  std::cout << "HierarchicalList v0.1" << std::endl << std::endl
+
+            << "\tAvaliable commands:" << std::endl << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "new" 
+                        << std::left << std::setw(p) << "<name>"
+                        << std::left << std::setw(p) << "" 
+                        << "create new list and edit;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "open"
+                        << std::left << std::setw(p) << "<name>"
+                        << std::left << std::setw(p) << "" 
+                        << "open list and edit;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "delete"
+                        << std::left << std::setw(p) << "<name>"
+                        << std::left << std::setw(p) << "" 
+                        << "delete list;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "list"
+                        << std::left << std::setw(p) << "" 
+                        << std::left << std::setw(p) << "" 
+                        << "list of existing lists;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "help"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "command list;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "quit"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "exit HierarchicalList." << std::endl
+            << std::endl;
+
+  std::cout << "\tEdit list commands:" << std::endl << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "up"
+                        << std::left << std::setw(p) << "<index>"
+                        << std::left << std::setw(p) << ""
+                        << "up rate of element;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "down"
+                        << std::left << std::setw(p) << "<index>"
+                        << std::left << std::setw(p) << ""
+                        << "down rate of element;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "set"
+                        << std::left << std::setw(p) << "<index>"
+                        << std::left << std::setw(p) << "<rate>"
+                        << "set rate of element;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "add"
+                        << std::left << std::setw(p) << "<rate>"
+                        << std::left << std::setw(p) << "<content>"
+                        << "add element;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "remove"
+                        << std::left << std::setw(p) << "<index>"
+                        << std::left << std::setw(p) << ""
+                        << "remove element;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "save"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "save list to file;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "stop"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "stop working on list;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "help"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "command list;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "clean"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "remove all elements from list;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "edit"
+                        << std::left << std::setw(p) << ""
+                        << std::left << std::setw(p) << ""
+                        << "edit list (set new name)." << std::endl;
+
+}
+
+void print_error() {
+  std::cout << "Something go wrong." << std::endl;
+}
+
+bool save_list() {
+  if (hl.write()) {
+    std::cout << hl.get_name() << " saved." << std::endl;
+    return true;
+  }
+  else {
+    std::cout << hl.get_name() << " has trouble with saving." << std::endl;
+    return false;
+  }
+}
+
+bool are_you_sure() {
+
+  bool complite{false};
+  //while (1) ?
+  while (!complite) {
+
+    char ch;
+
+    std::cout << "(y - yes, n - no): ";
+
+    std::cin >> ch;
+    clean_buffer();
+
+    if (ch == 'y') { return true; }
+    else if (ch == 'n') { return false; }
+    else { std::cout << "Wrong answer. Try again."; }
+  }
+}
+
+void clean_buffer() {
+  std::string passline{"empty line"};
+  getline(std::cin, passline);  // hack to clear the buffer
 }
