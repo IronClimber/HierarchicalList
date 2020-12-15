@@ -90,6 +90,31 @@ void HierarchicalList::down_rate(int pos) {
 
 }
 
+//Swap rate of elements
+//Check arguments before call
+void HierarchicalList::swap_elements(int pos1, int pos2) {
+   
+  //std::cout << pos1 << " " << pos2 << std::endl;
+
+  int r1{hlist[pos1].get_rate()};
+  int r2{hlist[pos2].get_rate()};
+
+  //std::cout << r1 << " " << r2 << std::endl;
+
+  //Depends on how set_rate works. It moves to the first position of this rate
+  if (r1>r2) {
+    //std::cout << r1 << ">" << r2 << std::endl;
+    set_rate(pos2, r1);
+    set_rate(pos1, r2); 
+  }
+  else {
+    //std::cout << r1 << "<" << r2 << std::endl;
+    set_rate(pos1, r2);
+    set_rate(pos2, r1); 
+  }
+
+}
+
 /* User should check range of position before calling */
 void HierarchicalList::remove(int pos) {
   hlist.erase(hlist.begin() + pos);

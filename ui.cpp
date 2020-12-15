@@ -279,6 +279,41 @@ void edit_list() {
       }  
     } 
 
+    /* SET */
+    else if (cmd == "swap") {
+
+      int n1 = -1;
+      int n2 = -1;
+
+      if (input.size() > 2) {
+        try {
+          n1 = std::stoi(input[1]);
+        }
+        catch (...) {
+          std::cout << "Wrong index1" << std::endl;
+        }
+
+        try {
+          n2 = std::stoi(input[2]);
+        }
+        catch (...) {
+          std::cout << "Wrong index2" << std::endl;
+        }
+
+        if (n1 >= 0 && n1 < hl.size() && 
+            n2 >= 0 && n2 < hl.size() &&
+            n1 != n2) {
+           hl.swap_elements(n1, n2);
+        }   
+        else {
+          std::cout << "Wrong arguments. Usage: set [index1 <int>] [index2 <int>]" << std::endl;
+        }
+      }
+      else {
+        std::cout << "Not enough arguments" << std::endl;
+      }  
+    } 
+
     /* ADD */
     else if (cmd == "add") {
       int r = -1;
