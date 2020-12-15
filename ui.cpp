@@ -98,6 +98,15 @@ void select_list() {
     return;
   }
 
+  /* SHOW */
+  else if (cmd == "show") {
+    if (input.size() > 1) {
+      std::string n{make_string(input, 1)};
+      if (set_file(n)) { hl.print(); }
+    }
+    return;
+  }
+
   /* DELETE */
   else if (cmd == "delete") {
     if (input.size() > 1) {
