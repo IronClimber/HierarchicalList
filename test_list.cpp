@@ -107,9 +107,9 @@ int main() {
     std::cout << "Test HierarchicalList constructor from file:" << std::endl;
 
     HierarchicalList hl54("Люди");
-    hl54.add_element("Хороший", 1);
-    hl54.add_element("Плохой", 3);
-    hl54.add_element("Злой", 2);
+    hl54.add_element(1, "Хороший");
+    hl54.add_element(3, "Плохой");
+    hl54.add_element(2, "Злой");
     hl54.write();
     HierarchicalList hl45("lists", "Люди.lst");
     hl45.print();

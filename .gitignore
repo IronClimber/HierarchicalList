@@ -12,3 +12,6 @@ desc.txt
 
 #compiled files
 *.out
+
+#source files
+test.cpp

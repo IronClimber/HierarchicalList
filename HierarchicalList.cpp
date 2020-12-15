@@ -15,7 +15,7 @@ HierarchicalList::HierarchicalList(std::string folder, std::string file)
   
 }
 
-void HierarchicalList::add_element(std::string c, int r) {
+void HierarchicalList::add_element(int r, std::string c) {
   Element e{c,r};
   add_element(e);  
 }
@@ -61,12 +61,21 @@ void HierarchicalList::set_rate(int pos, int rate) {
     else {
       hlist.erase(hlist.begin() + pos + 1);
     } 
-    std::cout << "SET: pos = " << pos << ", new_pos = " << new_pos
-              << ", rate = " << rate << std::endl;
+    /* std::cout << "SET: pos = " << pos << ", new_pos = " << new_pos
+              << ", rate = " << rate << std::endl; */
 
   }
 }
 
+//Do nothing if wrong position. Write about this?
+void HierarchicalList::set_content(int pos, std::string c) {
+  if (pos >=0 && pos < hlist.size()) {
+    hlist[pos].set_content(c);
+  }
+  else {
+    std::cout << "Wrong position" << std::endl;
+  }
+}
 
 void HierarchicalList::up_rate(int pos) {
   int current_rate = hlist[pos].get_rate();

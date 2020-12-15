@@ -19,7 +19,7 @@ class HierarchicalList {
     std::string get_name() const { return name; }
     void set_name(std::string n) { name = n; }
     void add_element(Element& e);
-    void add_element(std::string c, int r);
+    void add_element(int r, std::string c);
     /*void add_element_to_end(Element& e);
     void add_element_to_begin(Element& e);
     void add_element_to_position(Element& e, int pos);
@@ -37,6 +37,7 @@ class HierarchicalList {
     void up_rate(int pos);
     void down_rate(int pos);    
     void set_rate(int pos, int rate);
+    void set_content(int pos, std::string c);
     void remove(int pos);
     int get_position_rate_first(int r);
     int get_position_rate_last(int r);

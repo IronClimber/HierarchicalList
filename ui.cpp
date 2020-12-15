@@ -10,24 +10,25 @@ using namespace boost::filesystem;
 
 HierarchicalList hl;
 //std::string input_line;
-//std::vector<std::string> input;
+std::vector<std::string> input;
 
 bool quit{false};
 bool stop{true};
 
 //ToDo: interface library
+std::string make_string(std::vector<std::string>& vs, int pos);
 void clean_buffer();
 std::vector<std::string> prompt();
 bool are_you_sure();
 std::vector<std::string> get_names();
 std::vector<std::string> split(const std::string &s, char delim);
 void select_list();
-void delete_list();
+void delete_list(std::string n);
 bool check_list(std::string n);
 void remove_list(std::string n);
 void edit_list();
-bool set_name();
-bool set_file();
+bool set_name(std::string n);
+bool set_file(std::string n);
 void print_lists();
 void print_help();
 void print_error();
@@ -40,6 +41,11 @@ int main() {
   while (!quit) {
     hl.clean();
     select_list();
+    /*std::vector<std::string> vs;
+    vs = prompt();
+    for (std::string s : vs) {
+      std::cout << s << std::endl;
+    }*/
   }
 
   std::cout << "Good bye!" << std::endl;
@@ -53,54 +59,68 @@ int main() {
 std::vector<std::string> prompt() {
   std::cout << ">>> ";
   std::string istr;
+  //Something wrong with this.
   getline(std::cin, istr);
+  std::stringstream ss(istr);
+  std::vector<std::string> words;
+  for(std::string s; ss >> s;) { words.push_back(s); }
+  return words;
 }
 
 void select_list() {
 
   std::cout << std::endl;
   std::cout << "Select list, please." << std::endl << std::endl;
-  std::cout << ">>> ";
+
+  input.clear();
+  input = prompt();
 
   std::string cmd;
-
-  std::cin >> cmd;
-
+  cmd = input[0];  
+ 
   std::cout << std::endl;
 
+  /* NEW */
   if      (cmd == "new") {
-    if (set_name()) { 
-      edit_list(); 
+    if (input.size() > 1) {
+      std::string n{make_string(input, 1)};
+      if (set_name(n)) { edit_list(); }
     }    
     return;
   }
 
+  /* OPEN */
   else if (cmd == "open") {
-    if (set_file()) { 
-      edit_list(); 
+    if (input.size() > 1) {
+      std::string n{make_string(input, 1)};
+      if (set_file(n)) { edit_list(); }
     }
     return;
   }
 
+  /* DELETE */
   else if (cmd == "delete") {
-    delete_list();
-    return;
-  }
-  else if(cmd == "list") {
-    print_lists();
-    clean_buffer();  // hack to clear the buffer
+    if (input.size() > 1) {
+      std::string n{make_string(input, 1)};
+      delete_list(n);
+    }
     return;
   }
 
+  /* LIST */
+  else if(cmd == "list") {
+    print_lists();
+    return;
+  }
+
+  /* HELP */
   else if(cmd == "help") {
     print_help();
-    clean_buffer();  // hack to clear the buffer
     return;
   }
 
   else if(cmd == "quit") {
     quit = true;
-    clean_buffer();  // hack to clear the buffer
     return;
   }
 
@@ -115,20 +135,20 @@ void edit_list() {
   
   while (!stop) {
 
-    std::cout << std::endl;
+    //std::cout << std::endl;
     hl.print();
     std::cout << std::endl;
-    std::cout << ">>> ";
+
+    input.clear();
+    input = prompt();
 
     std::string cmd;
+    cmd = input[0]; 
 
-    std::cin >> cmd;
-    //clean_buffer();
     std::cout << std::endl;
     
     /* STOP */
     if      (cmd == "stop") {
-      clean_buffer();
       std::cout << "Do you want to save changes? ";
       if (are_you_sure()) {
         if (save_list()) { return; } 
@@ -138,108 +158,174 @@ void edit_list() {
 
     /* SAVE */
     else if (cmd == "save") {
-      clean_buffer();
       save_list();
     }
 
     /* CLEAN */
     else if (cmd == "clean") {
-      clean_buffer();
       hl.clean();
     }  
 
     /* EDIT */
-    // Now only name
     else if (cmd == "edit") {
       
-      clean_buffer();
-      std::cout << "New name for list: ";
-      set_name();
-      std::cout << "Don't forget remove old list!" << std::endl;
+      int n = -1;
+      std::string s;
+  
+      if (input.size() > 2) {
+        try {
+          n = std::stoi(input[1]);
+        }
+        catch (...) {
+          std::cout << "Wrong element position" << std::endl;
+        }
+
+        s = make_string(input, 2);
+
+        if (n >= 0 && n < hl.size()) { hl.set_content(n, s); }  
+        else { std::cout << "Wrong element position" << std::endl; }
+
+      }
+
+      else {
+        std::cout << "Not enough arguments" << std::endl;
+      }
+      //std::cout << "Don't forget remove old list!" << std::endl;
     } 
 
     /* DOWN */
     else if (cmd == "down") {
-      int n;
-      std::cin >> n;
-      clean_buffer();
-      if (n >= 0 && n < hl.size()) {
-        hl.down_rate(n);
+      int n = -1;
+      if (input.size() > 1) {
+        try {
+          n = std::stoi(input[1]);
+          if (n >= 0 && n < hl.size()) {
+            hl.down_rate(n);
+          }
+          else {
+            std::cout << "Wrong element position" << std::endl;
+          }
+        }
+        catch (...) {
+          std::cout << "Wrong argument" << std::endl;
+        }
       }
       else {
-        std::cout << "Wrong element position" << std::endl;
+        std::cout << "Usage: down [index <int>]" << std::endl;
       }
     } 
 
     /* UP */
     else if (cmd == "up") {
-      int n;
-      std::cin >> n;
-      clean_buffer();
-      if (n >= 0 && n < hl.size()) {
-        hl.up_rate(n);
-      }   
+      int n = -1;
+      if (input.size() > 1) {
+        try {
+          n = std::stoi(input[1]);
+          if (n >= 0 && n < hl.size()) {
+            hl.up_rate(n);
+          }
+          else {
+            std::cout << "Wrong element position" << std::endl;
+          }
+        }
+        catch (...) {
+          std::cout << "Wrong argument" << std::endl;
+        }
+      }
       else {
-        std::cout << "Wrong element position" << std::endl;
-      }  
+        std::cout << "Usage: up [index <int>]" << std::endl;
+      }
     } 
 
     /* SET */
     else if (cmd == "set") {
-      int n, r;
-      std::cin >> n >> r;
-      //What about errors?
-      clean_buffer();
-      if (n >= 0 && n < hl.size()) {
-        hl.set_rate(n, r);
-      }   
+
+      int n = -1;
+      int r = -1;
+
+      if (input.size() > 2) {
+        try {
+          n = std::stoi(input[1]);
+        }
+        catch (...) {
+          std::cout << "Wrong index" << std::endl;
+        }
+
+        try {
+          r = std::stoi(input[2]);
+        }
+        catch (...) {
+          std::cout << "Wrong rate" << std::endl;
+        }
+
+        if (n >= 0 && n < hl.size() && r >= 0) {
+          hl.set_rate(n, r);
+        }   
+        else {
+          std::cout << "Wrong arguments. Usage: set [index <int>] [rate <int>]" << std::endl;
+        }
+      }
       else {
-        std::cout << "Wrong element position" << std::endl;
+        std::cout << "Not enough arguments" << std::endl;
       }  
     } 
 
     /* ADD */
     else if (cmd == "add") {
-      int r;
-      std::string c;
-      std::cin >> r;
+      int r = -1;
+      std::string s;
+  
+      if (input.size() > 2) {
+        try {
+          r = std::stoi(input[1]);
+        }
+        catch (...) {
+          std::cout << "Wrong rate" << std::endl;
+        }
 
-      /*if(!std::cin >> r) {
-        std::cout << "Wrong input" << std::endl;
-      };*/
-      
-      if (r >= 0) {
-        getline(std::cin, c);
-        hl.add_element(c, r);
-      }   
-      else {
-        std::cout << "Wrong rate" << std::endl;
+        s = make_string(input, 2);
+
+        if (r >= 0) { hl.add_element(r, s); }  
+        else { std::cout << "Wrong rate" << std::endl; }
+
       }
-      clean_buffer();
+
+      else {
+        std::cout << "Not enough arguments" << std::endl;
+      }
+      
     }
 
     /* REMOVE */
     else if (cmd == "remove") {
-      int n;
-      std::cin >> n;
-      clean_buffer();
-      if (n >= 0 && n < hl.size()) {
-        hl.remove(n);
+
+      int n = -1;
+      if (input.size() > 1) {
+        try {
+          n = std::stoi(input[1]);
+          if (n >= 0 && n < hl.size()) {
+            hl.remove(n);
+          }
+          else {
+            std::cout << "Wrong element position" << std::endl;
+          }
+        }
+        catch (...) {
+          std::cout << "Wrong argument" << std::endl;
+        }
       }
       else {
-        std::cout << "Wrong element position" << std::endl;
+        std::cout << "Usage: remove [index <int>]" << std::endl;
       }
       
     }
  
     /* HELP */
     else if (cmd == "help") {
-      clean_buffer();
       print_help();
     }
 
     else { 
-      clean_buffer(); 
       print_error();
       std::cout << std::endl;
     }
@@ -247,22 +333,11 @@ void edit_list() {
 
 }
 
-int get_int() {
-  int n;
-  std::cin >> n;
-  return n;
-}
+bool set_name(std::string n) {
 
-bool set_name() {
-  
-  std::string n;
-  std::cin >> n;
-  clean_buffer();
-  for (std::string s : get_names()) {
-    if (s == n) {
-      std::cout << "ERROR: List with same name already exist. Try other name." << std::endl;
-      return false;
-    }
+  if (check_list(n)) {
+    std::cout << "ERROR: List with same name already exist. Try other name." << std::endl;
+    return false;
   }
   hl.set_name(n);
 
@@ -271,25 +346,21 @@ bool set_name() {
 }
 
 //Should I clean list before read? Yes, but where? In this function?
-bool set_file() {
-  std::string n;
-  std::cin >> n;
-  clean_buffer();
-  for (std::string s : get_names()) {
-    if (s == n) {
-      std::string file = LIST_FOLDER + n + ".lst";
-      std::cout << "Reading from file '" << file << "'..." << std::endl;
-      if (hl.read(file)) {
-        std::cout << "Read list '" << n <<  "' from file successfully." << std::endl;
-        return true;
-      }
-      else {
-        std::cout << "Read list '" << n <<  "' from file FAILED." << std::endl;
-        return false;
-      }
-    }
+bool set_file(std::string n) {
 
+  if (check_list(n)) {
+    std::string file = LIST_FOLDER + n + ".lst";
+    std::cout << "Reading from file '" << file << "'..." << std::endl;
+    if (hl.read(file)) {
+      std::cout << "Read list '" << n <<  "' from file successfully." << std::endl;
+      return true;
+    }
+    else {
+      std::cout << "Read list '" << n <<  "' from file FAILED." << std::endl;
+      return false;
+    }
   }
+
   std::cout << "There are no list with name '" << n << "'" << std::endl;
   return false;
 }
@@ -342,11 +413,8 @@ std::vector<std::string> split(const std::string &s, char delim) {
   return elems;
 }
 
-void delete_list() {
+void delete_list(std::string n) {
 
-  std::string n;
-  std::cin >> n;
-  clean_buffer();
   if (check_list(n)) { 
     std::cout << "Do you really want to remove list '" << n << "'? ";
     if (are_you_sure()) {
@@ -367,7 +435,7 @@ void remove_list(std::string n) {
   path p{get_path(n)};
   if (exists(p)) {
     if(remove(p)) {
-      std::cout<<"List succesfully removed.";
+      std::cout<<"List succesfully deleted.";
     }
   }
   else {
@@ -445,6 +513,11 @@ void print_help() {
                         << std::left << std::setw(p) << "<content>"
                         << "add element;" << std::endl
 
+            << "\t\t- " << std::left << std::setw(c) << "edit"
+                        << std::left << std::setw(p) << "<index>"
+                        << std::left << std::setw(p) << "<content>"
+                        << "edit content of element;" << std::endl
+
             << "\t\t- " << std::left << std::setw(c) << "remove"
                         << std::left << std::setw(p) << "<index>"
                         << std::left << std::setw(p) << ""
@@ -468,12 +541,9 @@ void print_help() {
             << "\t\t- " << std::left << std::setw(c) << "clean"
                         << std::left << std::setw(p) << ""
                         << std::left << std::setw(p) << ""
-                        << "remove all elements from list;" << std::endl
+                        << "remove all elements from list" << std::endl;
 
-            << "\t\t- " << std::left << std::setw(c) << "edit"
-                        << std::left << std::setw(p) << ""
-                        << std::left << std::setw(p) << ""
-                        << "edit list (set new name)." << std::endl;
+
 
 }
 
@@ -515,3 +585,26 @@ void clean_buffer() {
   std::string passline{"empty line"};
   getline(std::cin, passline);  // hack to clear the buffer
 }
+
+std::string make_string(std::vector<std::string>& vs, int pos) {
+  if (pos < vs.size()) {
+    std::stringstream ostr;
+    ostr << vs[pos];
+    for(int i = pos + 1; i < vs.size(); ++i) {
+      ostr << " " << vs[i];
+    }
+  return ostr.str();
+  }
+  return {};
+}
+
+/* bool get_int(std::string s, int& n) {
+  try {
+    n = std::stoi(s);
+  }
+  catch (...) {
+    return false;
+  }
+  return true;
+}
+*/
