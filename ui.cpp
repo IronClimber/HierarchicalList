@@ -328,6 +328,22 @@ void edit_list() {
       }
       
     }
+
+    /* RENAME */
+    else if (cmd == "rename") {
+
+      std::string s;
+      if (input.size() > 1) {
+        s = make_string(input, 1);
+        if (!set_name(s)) { 
+          std::cout << "Wrong name" << std::endl; 
+        }
+      }
+      else {
+        std::cout << "Not enough arguments" << std::endl;
+      }
+      
+    }
  
     /* HELP */
     else if (cmd == "help") {
@@ -484,6 +500,11 @@ void print_help() {
                         << std::left << std::setw(p) << "" 
                         << "delete list;" << std::endl
 
+            << "\t\t- " << std::left << std::setw(c) << "show"
+                        << std::left << std::setw(p) << "<name>" 
+                        << std::left << std::setw(p) << "" 
+                        << "show list;" << std::endl
+
             << "\t\t- " << std::left << std::setw(c) << "list"
                         << std::left << std::setw(p) << "" 
                         << std::left << std::setw(p) << "" 
@@ -527,10 +548,20 @@ void print_help() {
                         << std::left << std::setw(p) << "<content>"
                         << "edit content of element;" << std::endl
 
+            << "\t\t- " << std::left << std::setw(c) << "swap"
+                        << std::left << std::setw(p) << "<index>"
+                        << std::left << std::setw(p) << "<index>"
+                        << "swap rate of elements;" << std::endl
+
             << "\t\t- " << std::left << std::setw(c) << "remove"
                         << std::left << std::setw(p) << "<index>"
                         << std::left << std::setw(p) << ""
                         << "remove element;" << std::endl
+
+            << "\t\t- " << std::left << std::setw(c) << "rename"
+                        << std::left << std::setw(p) << "<new_name>"
+                        << std::left << std::setw(p) << ""
+                        << "set new name to list;" << std::endl
 
             << "\t\t- " << std::left << std::setw(c) << "save"
                         << std::left << std::setw(p) << ""
@@ -550,7 +581,7 @@ void print_help() {
             << "\t\t- " << std::left << std::setw(c) << "clean"
                         << std::left << std::setw(p) << ""
                         << std::left << std::setw(p) << ""
-                        << "remove all elements from list" << std::endl;
+                        << "remove all elements from list." << std::endl;
 
 
 
